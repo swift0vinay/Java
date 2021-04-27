@@ -37,3 +37,66 @@
         // return true if everything sucessfully colored.
         return true;
     }
+   class Solution {
+    public boolean isBipartite(int[][] graph) {
+        ArrayList<ArrayList<Integer>> adj=new ArrayList<>();
+        int n=graph.length;
+        for(int i=0;i<n;i++){
+            ArrayList<Integer> temp=new ArrayList<Integer>();
+            for(int j:graph[i]){    
+                temp.add(j);
+            }
+            adj.add(temp);
+        }
+        boolean visited[]=new boolean[n];
+        int coloring[]=new int[n];
+        boolean rs=bfs(n,visited,adj,coloring);
+        // System.out.println(Arrays.toString(coloring));
+        return rs;
+    }
+      
+    // Bipartite Test Using BFS
+    boolean bfs(int n,boolean[] visited,ArrayList<ArrayList<Integer>> adj,int[] coloring){
+        for(int j=0;j<n;j++){
+            if(!visited[j]){
+                ArrayDeque<Integer> dq=new ArrayDeque<Integer>();
+                dq.add(j);
+                int color=0;
+                while(!dq.isEmpty()){
+                    int size=dq.size();
+                    for(int i=0;i<size;i++){
+                        int z=dq.pollFirst();
+                        visited[z]=true;
+                        coloring[z]=color;
+                        for(Integer child:adj.get(z)){
+                            if(!visited[child]){
+                                coloring[child]=color^1;
+                                dq.add(child);
+                            }else if(coloring[child]==coloring[z]){
+                                return false;
+                            }
+                        }
+                    }
+                     color^=1;
+                }
+            }
+        }
+        return true;
+    }
+      
+    // Bipartite Test Using DFS
+    boolean dfs(int src,int color,boolean[] visited,ArrayList<ArrayList<Integer>> adj,int[] coloring){
+        visited[src]=true;
+        coloring[src]=color;
+        for(Integer child:adj.get(src)){
+            if(!visited[child]){
+                boolean rs=dfs(child,(color^1),visited,adj,coloring);
+                if(!rs)
+                    return false;
+            }else if(coloring[child]==coloring[src]){
+                return false;
+            }
+        }
+        return true;
+    }
+}
